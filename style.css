@@ -1,0 +1,82 @@
+* {
+    box-sizing: border-box;
+}
+
+#space {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    background: url(./pics/SpaceShooterRedux/Backgrounds/darkPurple.png);
+    animation: scroll-background 5s linear infinite;
+}
+
+@keyframes scroll-background {
+    from {
+        background-position-y: 0px;
+    }
+    to {
+        background-position-y: 256px;
+    }
+}
+
+@keyframes hit {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+#game #score {
+    position: absolute;
+    margin: 20px;
+    color: white;
+}
+
+#game #damage {
+    position: absolute;
+    margin: 20px;
+    color: white;
+    top: 90%;
+}
+
+#game {
+    position: absolute;
+    margin: 10px;
+    border: 1px solid white;
+}
+
+#game #player {
+    position: absolute;
+    margin-left: -20px;
+    width: 40px;
+}
+
+.hit {
+    animation: hit 0.1s linear 0s 3;
+}
+
+#game #laser {
+    position: absolute;
+    margin-left: -2.5px;
+    height: 30px;
+}
+
+#game #ray {
+    position: absolute;
+    opacity: 0;
+    height: 100px;
+    width: 5px;
+    margin-left: -2.5px;
+    background-color: white;
+}
+
+#game #enemy {
+    position: absolute;
+    margin-left: -20px;
+    margin-top: -18px;
+    width: 40px;
+}
