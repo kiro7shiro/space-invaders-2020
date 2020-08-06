@@ -5,10 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Space Invader</title>
     <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
     <div id="space"></div>
-    <div id="game"></div>
+    <div id="game">
+        <div id="menu">
+            <div id="welcome">
+                <h1 class="w3-block">Space Invaders</h1>
+                <input
+                class="w3-button w3-deep-purple w3-round-large w3-block w3-margin-bottom"
+                data-action="start"
+                type="button"
+                value="start"
+                id="start">
+                <input
+                class="w3-button w3-deep-purple w3-round-large w3-block w3-margin-bottom"
+                data-action="options"
+                type="button"
+                value="options"
+                id="options">
+            </div>
+            <div class="w3-center" id="create-player">
+                <label class="w3-label" for="player-name">name:</label>
+                <input 
+                    class="w3-input w3-round-large"
+                    type="text"
+                    name="player-name"
+                    id="player-name">
+                <p class="w3-tiny">enter name and press enter</p>
+            </div>
+        </div>
+    </div>
+
     <script src="./app.js" type="module"></script>
 </body>
 </html>

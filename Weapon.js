@@ -1,17 +1,11 @@
-import { Entity } from './Entity.js'
+import { Gametoken } from './Gametoken.js'
 
-class Weapon extends Entity {
-    constructor(container, x, y, owner, {id, cooldown, image, sound, transforms} = {}) {
-        super(container, 'img', x, y)
+class Weapon extends Gametoken {
+    constructor(container, x, y, owner, {cooldown, hitpoints, id, image, sound, speed, transforms} = {}) {
+        super(container, 'img', x, y, {cooldown, hitpoints, sound, speed, transforms})
         this.element.src = image
         this.element.id = id
-
-        this.cooldown = cooldown
-        this.sound = new Audio(sound)
-        this.speed = 600
         this.owner = owner
-
-        transforms.forEach(trs => this.setTransform(trs))
     }
 }
 

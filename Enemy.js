@@ -1,16 +1,18 @@
-import { Entity } from './Entity.js'
 import { Weapon } from './Weapon.js'
+import { Gametoken } from './Gametoken.js'
 
-class Enemy extends Entity {
-    constructor(container, x, y, {cooldown, hitpoints, image, speed, weapon} = {}) {
-        super(container, 'img', x, y)
+class Enemy extends Gametoken {
+    constructor(container, x, y, {cooldown, hitpoints, image, speed, transforms, weapon} = {}) {
+        super(container, 'img', x, y, {cooldown, hitpoints, speed, transforms, weapon})
         this.element.src = image
         this.element.id = 'enemy'
-
-        this.cooldown = cooldown
-        this.hitpoints = hitpoints
-        this.speed = speed
-        this.weapon = weapon
+        this.fireCooldown = 0
+    }
+    defend(weapon) {
+        // calc damage
+        this.hitpoints -= weapon.hitpoints
+        if (!this.hitpoints) this.destroy()
+        // show hit animation
     }
     fire() {
         const weapon = new Weapon(
@@ -20,7 +22,7 @@ class Enemy extends Entity {
             this.weapon
         )
         /* weapon.sound.play() */
-        this.cooldown = weapon.cooldown
+        this.fireCooldown = weapon.cooldown
         return weapon
     }
 }

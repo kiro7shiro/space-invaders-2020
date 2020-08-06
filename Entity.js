@@ -1,45 +1,38 @@
 class Entity {
-    constructor(container, type, x, y) {
-        this.container = container
-        this.element = document.createElement(type)
-        this.container.appendChild(this.element)
-        this._lastHit = 0
+    constructor(container, type, x, y, {transforms} = {}) {
         this.offsetX = 0
         this.offsetY = 0
         this.x = x || 0
         this.y = y || 0
         this.transforms = []
-        this.setPosition(this.x, this.y)
+        if (container) {
+            this.container = container
+            this.element = document.createElement(type)
+            this.container.appendChild(this.element)
+            this.setPosition(this.x, this.y)
+        }
+        if (transforms) transforms.forEach(trs => this.setTransform(trs))
     }
     get height() {
-        return this.element.height
+        return this.element.getBoundingClientRect().height
+    }
+    set height(val) {
+        this.element.style.height = val + 'px'
     }
     get hitbox() {
         return this.element.getBoundingClientRect()
     }
-    get lastHit() {
-        return this._lastHit
-    }
-    set lastHit(val) {
-        this._lastHit = val
-        if (!this.element.classList.contains('hit')) {
-            this.element.classList.add('hit')
-        }
-    }
     get width() {
-        return this.element.width
+        return this.element.getBoundingClientRect().width
     }
-    destroy() {
-        this.container.removeChild(this.element)
-        this.isDead = true
+    set width(val) {
+        this.element.style.width = val + 'px'
     }
-    hit(entity) {
-        return !(
-            this.hitbox.left > entity.hitbox.right ||
-            this.hitbox.right < entity.hitbox.left ||
-            this.hitbox.top > entity.hitbox.bottom ||
-            this.hitbox.bottom < entity.hitbox.top
-        )
+    hide() {
+        this.element.style.display = 'none'
+    }
+    isVisible() {
+        return !(this.element.style.display === 'none')
     }
     offset(x, y) {
         this.offsetX = x
@@ -73,10 +66,8 @@ class Entity {
         })
         this.element.style.transform = transform
     }
-    wasHit(dt) {
-        if (this.element.classList.contains('hit') && dt >= 300) {
-            this.element.classList.remove('hit')
-        }
+    show() {
+        this.element.style.display = 'block'
     }
 }
 
