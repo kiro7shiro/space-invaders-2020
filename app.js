@@ -4,21 +4,15 @@ import { getRandomNumber } from './Random.js'
 import level1 from './levels/level1.js'
 import { Gametoken } from './Gametoken.js'
 import { Gamemenu } from './Gamemenu.js'
+import { Gamekey } from './Gamekey.js'
 // setup
 const game = document.getElementById('game')
 game.height = window.innerHeight 
 game.width = 800
-game.keyPressed = {
-    down : false,
-    left : false,
-    right : false,
-    space : false,
-    up : false
-}
 game.timer = {
-    curr : Date.now(),
-    delta : 0,
-    last : Date.now(),
+    curr : 0,
+    delta : 1/60,
+    last : 0,
     pause : true
 }
 game.enemies = []
@@ -29,7 +23,24 @@ const menu = new Gamemenu(document.getElementById('menu'))
 menu.height = 200
 menu.width = 250
 menu.setPosition(game.width / 2 - menu.width / 2, game.height / 4)
-console.log(menu)
+
+game.keys = {}
+game.keys.Escape = new Gamekey('Escape')
+game.keys.Escape.on('up', function() {
+    if (menu.welcomeMenu.isVisible()) {
+        game.timer.pause = false
+        menu.welcomeMenu.hide()
+    }else{
+        game.timer.pause = true
+        menu.welcomeMenu.show()
+    }
+})
+game.keys.ArrowDown = new Gamekey('ArrowDown')
+game.keys.ArrowLeft = new Gamekey('ArrowLeft')
+game.keys.ArrowRight = new Gamekey('ArrowRight')
+game.keys.ArrowUp = new Gamekey('ArrowUp')
+game.keys.Space = new Gamekey('Space')
+
 
 function clamp(v, min, max) {
     if (v <= min) {
@@ -57,11 +68,13 @@ function init() {
 }
 
 function keyDown(e) {
-    game.keyPressed[e.code] = true
+    if (!game.keys[e.code]) game.keys[e.code] = new Gamekey(e.code)
+    game.keys[e.code].emit('down')
 }
 
 function keyUp(e) {
-    game.keyPressed[e.code] = false
+    if (!game.keys[e.code]) game.keys[e.code] = new Gamekey(e.code)
+    game.keys[e.code].emit('up')
 }
 
 function resize() {
@@ -77,48 +90,40 @@ function resize() {
 }
 
 function update() {
-    // update levels here!
+    // update levels here
     var timer = game.timer
-    timer.curr = Date.now()
-    timer.delta = (timer.curr - timer.last) / 1000.0
-    if (game.keyPressed.Escape) {
-        timer.pause = !timer.pause
-        if (!menu.welcomeMenu.isVisible()) {
-            menu.welcomeMenu.show()
-        }else{
-            menu.welcomeMenu.hide()
-        }
-    }
     if (!timer.pause) {
+        timer.curr += timer.delta
+        timer.delta = (timer.curr - timer.last)
         updatePlayer(timer.delta)
         updateWeapons(timer.delta)
         updateEnemies(timer.delta)
+        timer.last = timer.curr 
     }
-    timer.last = timer.curr
     requestAnimationFrame(update)
 }
 
+setInterval(() => console.log(game.timer), 1000)
+
 function updatePlayer(dt) {
-    if (game.keyPressed.ArrowDown)   {
+    if (game.keys.ArrowDown.down) {
         player.y += dt * player.speed
     }
-    if (game.keyPressed.ArrowLeft) {
+    if (game.keys.ArrowLeft.down) {
         player.x -= dt * player.speed
     }
-    if (game.keyPressed.ArrowRight) {
+    if (game.keys.ArrowRight.down) {
         player.x += dt * player.speed
     }
-    if (game.keyPressed.ArrowUp) {
+    if (game.keys.ArrowUp.down) {
         player.y -= dt * player.speed
     }
-    if (game.keyPressed.Space && player.fireCooldown <= 0) {
+    if (game.keys.Space.down && player.fireCooldown <= 0) {
         const weapon = player.fire()
         game.weapons.push(weapon)
-        console.log(player.fireCooldown)
         console.log(weapon)
     }
     if (player.fireCooldown > 0) player.fireCooldown -= dt
-
     player.x = clamp(player.x, player.width, game.width - player.width)
     player.y = clamp(player.y, player.height, game.height - player.height - 20)
     player.setPosition(player.x, player.y)
@@ -155,8 +160,8 @@ function updateWeapons(dt) {
 }
 
 function updateEnemies(dt) {
-    const dx = Math.sin(game.timer.last / 1000.0) * 50
-    const dy = Math.cos(game.timer.last / 1000.0) * 10
+    const dx = Math.sin(game.timer.last) * 50
+    const dy = Math.cos(game.timer.last) * 10
     game.enemies.forEach(enemy => {
         enemy.offset(dx, dy)
         if (enemy.fireCooldown > 0) enemy.fireCooldown -= dt
@@ -186,7 +191,6 @@ const player = new Player(
     game.height - 100,
     PLAYER1
 )
-console.log(player)
 game.player = player
 
 // start up
@@ -196,4 +200,3 @@ window.addEventListener('keyup', keyUp)
 resize()
 init()
 requestAnimationFrame(update)
-
