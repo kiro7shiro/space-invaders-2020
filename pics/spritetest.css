@@ -1,0 +1,37 @@
+body {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+}
+
+#box {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 64px;
+    width: 64px;
+    background-image: url('./explosions/halfsized/4-2.png');
+    animation: playv 1s steps(8) infinite, playh 0.125s steps(8) infinite;
+    border: lightskyblue solid 1px;
+}
+
+@keyframes playv {
+    0% {
+        background-position-y: 0px;
+    }
+    100% {
+        background-position-y: -512px;
+    }
+}
+@keyframes playh {
+    0% {
+        background-position-x: 0px;
+    }
+    100% {
+        background-position-x: -512px;
+    }
+}
+
+/*  */
+/* var mod = cnt2 % 8
+if (mod === 0) rows += '<tr>' */

@@ -94,3 +94,32 @@
     margin-top: -18px;
     width: 40px;
 }
+
+#game #explosion {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 64px;
+    width: 64px;
+    margin-top: -32px;
+    margin-left: -32px;
+    background-image: url('./pics/explosions/halfsized/2-2.png');
+    animation: playv 1s steps(8) infinite, playh 0.125s steps(8) infinite;
+}
+
+@keyframes playv {
+    0% {
+        background-position-y: 0px;
+    }
+    100% {
+        background-position-y: -512px;
+    }
+}
+@keyframes playh {
+    0% {
+        background-position-x: 0px;
+    }
+    100% {
+        background-position-x: -512px;
+    }
+}

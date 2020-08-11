@@ -20,17 +20,41 @@ class Player extends Gametoken {
         this.name = name
 
         this.damage = {
-            hitpoints,
+            _hitpoints : 0,
             element : document.createElement('div')
         }
         this.damage.element.id = 'damage'
         this.damage.element.innerText = this.damage.hitpoints
         this.score = {
-            points : 0,
+            _points : 0,
             element : document.createElement('div')
         }
         this.score.element.id = 'score'
         this.score.element.innerText = this.name + ' : ' + this.score.points
+
+        const self = this
+        Object.defineProperty(this.damage, 'hitpoints', {
+            get : function() {
+                return this._hitpoints
+            },
+            set : function(val) {
+                this._hitpoints = val
+                this.element.innerText = val
+            },
+            configurable : true
+        })
+        Object.defineProperty(this.score, 'points', {
+            get : function() {
+                return this._points
+            },
+            set : function(val) {
+                this._points = val
+                this.element.innerText = self.name + ' : ' + this._points
+            },
+            configurable : true
+        })
+        this.damage.hitpoints = hitpoints
+        this.score.points = 0
         
         container.appendChild(this.score.element)
         container.appendChild(this.damage.element)
@@ -38,6 +62,7 @@ class Player extends Gametoken {
     }
     defend(weapon) {
         // calc damage
+        this.damage.hitpoints -= weapon.hitpoints
         // show hit animation
         const classList = this.element.classList
         if (!classList.contains('player-hit')) {

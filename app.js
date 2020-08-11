@@ -5,13 +5,26 @@ import level1 from './levels/level1.js'
 import { Gametoken } from './Gametoken.js'
 import { Gamemenu } from './Gamemenu.js'
 import { Gamekey } from './Gamekey.js'
+import WEAPONS from './levels/weapons.js'
+import { Control, Menu } from './Control.js'
+//
+const cntrl = new Control()
+cntrl.test()
+const menu2 = new Menu()
+menu2.test()
 // setup
 const game = document.getElementById('game')
 game.height = window.innerHeight 
 game.width = 800
 game.timer = {
     curr : 0,
+    clock : {
+        curr : 0,
+        last : 0,
+        passed : 0
+    },
     delta : 1/60,
+    diffDt : 0,
     last : 0,
     pause : true
 }
@@ -40,7 +53,6 @@ game.keys.ArrowLeft = new Gamekey('ArrowLeft')
 game.keys.ArrowRight = new Gamekey('ArrowRight')
 game.keys.ArrowUp = new Gamekey('ArrowUp')
 game.keys.Space = new Gamekey('Space')
-
 
 function clamp(v, min, max) {
     if (v <= min) {
@@ -90,20 +102,22 @@ function resize() {
 }
 
 function update() {
-    // update levels here
-    var timer = game.timer
+    const clock = game.timer.clock
+    const timer = game.timer
+    clock.curr = performance.now()
+    clock.passed = (clock.curr - clock.last) / 1000
+    timer.diffDt = clock.passed - timer.delta
     if (!timer.pause) {
-        timer.curr += timer.delta
-        timer.delta = (timer.curr - timer.last)
+        timer.curr += timer.delta + timer.diffDt
+        timer.delta = timer.curr - timer.last
         updatePlayer(timer.delta)
         updateWeapons(timer.delta)
         updateEnemies(timer.delta)
         timer.last = timer.curr 
     }
+    clock.last = performance.now()
     requestAnimationFrame(update)
 }
-
-setInterval(() => console.log(game.timer), 1000)
 
 function updatePlayer(dt) {
     if (game.keys.ArrowDown.down) {
@@ -121,7 +135,6 @@ function updatePlayer(dt) {
     if (game.keys.Space.down && player.fireCooldown <= 0) {
         const weapon = player.fire()
         game.weapons.push(weapon)
-        console.log(weapon)
     }
     if (player.fireCooldown > 0) player.fireCooldown -= dt
     player.x = clamp(player.x, player.width, game.width - player.width)
@@ -137,7 +150,17 @@ function updateWeapons(dt) {
             game.enemies.forEach(enemy => {
                 if (enemy.isDead) return
                 if (weapon.hit(enemy)) {
-                    enemy.defend(weapon)
+                    player.score.points += enemy.defend(weapon)
+                    const expl = new Gametoken(
+                        game,
+                        'div',
+                        enemy.x + enemy.offsetX , enemy.y + enemy.offsetY,
+                        WEAPONS.explosion
+                    )
+                    expl.element.id = 'explosion'
+                    expl.sound.play()
+                    setTimeout(() => expl.destroy(), 1000)
+                    game.weapons.push(expl)
                     weapon.destroy()
                 }
             })
@@ -200,3 +223,7 @@ window.addEventListener('keyup', keyUp)
 resize()
 init()
 requestAnimationFrame(update)
+
+// debug
+/* console.log(player) */
+/* setInterval(() => console.log(game.timer, game.timer.clock), 1000) */

@@ -12,6 +12,7 @@ class Enemy extends Gametoken {
         // calc damage
         this.hitpoints -= weapon.hitpoints
         if (!this.hitpoints) this.destroy()
+        return weapon.hitpoints
         // show hit animation
     }
     fire() {
