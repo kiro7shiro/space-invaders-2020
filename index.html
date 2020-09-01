@@ -9,13 +9,13 @@
     <script defer src="./app.js" type="module"></script>
 </head>
 <body>
-    <div id="game">
-        <div class="w3-center menu" id="startMenu">
+    <div class="w3-card" id="game">
+        <form action="start" id="startMenu" class="w3-center">
             <h1 class="w3-block">Space Invaders</h1>
             <input
             class="w3-button w3-deep-purple w3-round-large w3-block w3-margin-bottom"
             data-action="start"
-            type="button"
+            type="submit"
             value="start"
             id="start">
             <input
@@ -24,16 +24,26 @@
             type="button"
             value="options"
             id="options">
-        </div>
-        <div class="w3-center menu" id="createPlayer">
+        </form>
+        <form action="createPlayer" class="w3-center menu" id="createPlayer">
             <label class="w3-label" for="playerName">name:</label>
             <input 
+                required
                 class="w3-input w3-round-large"
                 data-action="playerName"
                 type="text"
                 name="playerName"
                 id="playerName">
             <p class="w3-tiny">enter name and press enter</p>
+        </form>
+        <form action="restart" id="gameOver" class="w3-center menu">
+            <h1 class="w3-block">Game over!</h1>
+            <input class="w3-button w3-deep-purple w3-round-large w3-block w3-margin-bottom" data-action="restart" type="submit" value="Restart">
+        </form>
+    </div>
+    <div class="w3-deep-purple w3-card w3-round-large" id="board">
+        <div id="player1" class="w3-label w3-padding">
+            <h1>player1 : 0</h1>
         </div>
     </div>
 </body>

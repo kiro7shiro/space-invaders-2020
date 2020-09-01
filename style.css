@@ -18,6 +18,12 @@
     animation: scroll-background 5s linear infinite;
 }
 
+#board {
+    position: absolute;
+    left : 20px;
+    top: 20px;
+}
+
 @keyframes scroll-background {
     from {
         background-position-y: 0px;
@@ -36,14 +42,14 @@
     }
 }
 
-#game .menu {
+#game form {
     color: white;
     display: none;
     position: absolute;
     z-index: 1;
 }
 
-#game .menu input:focus {
+#game form input:focus {
     outline: none;
 }
 

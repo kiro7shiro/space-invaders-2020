@@ -1,7 +1,9 @@
-class Control {
+class Control extends EventTarget {
     // handels basic functions for graphical interactions
     // Control([htmlElement || id || container, htmlType, x, y, [transforms]])
     constructor() {
+
+        super()
 
         var transforms = undefined
 

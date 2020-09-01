@@ -1,6 +1,9 @@
 import { Control } from './Control.js'
+import { Menu } from './Menu.js'
 import { Player } from './Player.js'
 import { Token } from './Token.js'
+
+import LEVEL1 from '../levels/level1.js'
 import WEAPONS from '../levels/weapons.js'
 
 const PLAYER1 = {
@@ -34,18 +37,26 @@ class Game extends Control {
 
         window.addEventListener('resize', this.resize.bind(this))
 
-        var menus = document.querySelectorAll('.menu')
-        menus.forEach(menu => {
-            this.menus[menu.id] = new Control(menu)
-            menu.addEventListener('click', this.click.bind(this))
-            menu.addEventListener('keydown', this.click.bind(this))
-        })
-
+        var menus = document.querySelectorAll('form')
+        menus.forEach(menu => this.menus[menu.id] = new Menu(menu))
+        this.menus.startMenu.addEventListener('start', this.start.bind(this))
+        this.menus.createPlayer.addEventListener('createPlayer', this.createPlayer.bind(this))
+        this.menus.gameOver.addEventListener('restart', this.restart.bind(this))
+        
     }
-    click(event) {
-        const action = event.target.dataset.action
-        if (this[action]) this[action]()
-        console.log(action)
+    createPlayer(event) {
+        const menu = this.menus.createPlayer
+        if (menu.isVisible()) menu.hide()
+        const data = Menu.data(event.srcElement.element)
+        const player = new Player(this.element, 0, 0, Object.assign(PLAYER1, {name : data.playerName}))
+        player.hide()
+        this.players.push(player)
+        this.start()
+    }
+    init(level) {
+        console.log(level)
+        this.menus.gameOver.show()
+        this.resize()
     }
     resize() {
         this.height = window.innerHeight 
@@ -61,11 +72,19 @@ class Game extends Control {
             player.setPosition(player.x, player.y)
         })
     }
+    restart(event) {
+        const menu = this.menus.gameOver
+        if (menu.isVisible()) menu.hide()
+        this.menus.startMenu.show()
+    }
     start() {
-        if (this.menus.startMenu.isVisible()) this.menus.startMenu.hide()
+        const menu = this.menus.startMenu
+        if (menu.isVisible()) menu.hide()
         if (!this.players.length) {
             this.menus.createPlayer.show()
             this.resize()
+        }else{
+            this.init(LEVEL1)
         }
     }
 }
