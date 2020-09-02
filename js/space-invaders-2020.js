@@ -1,5 +1,4 @@
 import { Control } from './Control.js'
-import { Menu } from './Menu.js'
 import { Player } from './Player.js'
 import { Token } from './Token.js'
 
@@ -13,6 +12,15 @@ const PLAYER1 = {
     name : 'Player1',
     speed : 600,
     weapon : WEAPONS.playerLaser
+}
+
+class Menudata {
+    constructor(form) {
+        const fData = new FormData(form)
+        for (const pair of fData.entries()) {
+            this[pair[0]] = pair[1]
+        }
+    }
 }
 
 class Game extends Control {
@@ -37,9 +45,21 @@ class Game extends Control {
 
         window.addEventListener('resize', this.resize.bind(this))
 
-        var menus = document.querySelectorAll('form')
-        menus.forEach(menu => this.menus[menu.id] = new Menu(menu))
-        this.menus.startMenu.addEventListener('start', this.start.bind(this))
+        const forms = document.querySelectorAll('form')
+        forms.forEach(form => {
+            const menu = new Control(form)
+            menu.addEventListener('submit', event => {
+                event.preventDefault()
+                if (event.target.action) {
+                    const action = event.target.action.replace(location.origin + '/', '')
+                    menu.dispatchEvent(new CustomEvent(action))
+                }
+            })
+            this.menus[form.id] = menu
+        })
+        const startMenu = this.menus.startMenu
+        startMenu.addEventListener('start', this.start.bind(this))
+        startMenu.children.options.addEventListener('click', this.options.bind(this))
         this.menus.createPlayer.addEventListener('createPlayer', this.createPlayer.bind(this))
         this.menus.gameOver.addEventListener('restart', this.restart.bind(this))
         
@@ -47,11 +67,11 @@ class Game extends Control {
     createPlayer(event) {
         const menu = this.menus.createPlayer
         if (menu.isVisible()) menu.hide()
-        const data = Menu.data(event.srcElement.element)
+        const data = new Menudata(event.target)
         const player = new Player(this.element, 0, 0, Object.assign(PLAYER1, {name : data.playerName}))
         player.hide()
         this.players.push(player)
-        this.start()
+        this.start(event)
     }
     init(level) {
         console.log(level)
@@ -72,12 +92,15 @@ class Game extends Control {
             player.setPosition(player.x, player.y)
         })
     }
+    options(event) {
+        console.log('TODO : show options!', event)
+    }
     restart(event) {
         const menu = this.menus.gameOver
         if (menu.isVisible()) menu.hide()
         this.menus.startMenu.show()
     }
-    start() {
+    start(event) {
         const menu = this.menus.startMenu
         if (menu.isVisible()) menu.hide()
         if (!this.players.length) {

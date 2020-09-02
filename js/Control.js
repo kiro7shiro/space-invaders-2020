@@ -1,14 +1,13 @@
-class Control extends EventTarget {
+class Control {
     // handels basic functions for graphical interactions
     // Control([htmlElement || id || container, htmlType, x, y, [transforms]])
     constructor() {
-
-        super()
 
         var transforms = undefined
 
         this.container = undefined
         this.element = undefined
+        this.events = []
         this.x = 0
         this.y = 0
         this.transforms = []
@@ -40,6 +39,13 @@ class Control extends EventTarget {
         }
 
     }
+    get children() {
+        const result = {}
+        for (const child of this.element.children) {
+            result[child.id] = child
+        }
+        return result
+    }
     get classList() {
         return this.element.classList
     }
@@ -60,6 +66,14 @@ class Control extends EventTarget {
     }
     set width(val) {
         this.element.style.width = val + 'px'
+    }
+    addEventListener(event, callback) {
+        this.element.addEventListener(event, callback)
+        if (!this.events[event]) this.events[event] = []
+        this.events[event].push(callback)
+    }
+    dispatchEvent(event) {
+        this.element.dispatchEvent(event)
     }
     hide() {
         this.element.style.display = 'none'
