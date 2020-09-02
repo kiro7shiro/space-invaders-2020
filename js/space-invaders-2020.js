@@ -23,22 +23,34 @@ class Menudata {
     }
 }
 
+class Gamekey extends EventTarget {
+    constructor(code) {
+        super()
+        this.code = code
+        this.down = false
+        this.up = false
+        super.addEventListener('down', () => {this.down = true; this.up = false})
+        super.addEventListener('up', () => {this.down = false; this.up = true})
+    }
+}
+
 class Game extends Control {
     constructor() {
         super(...arguments)
+        this.clock = {
+            curr : 0,
+            last : 0,
+            passed : 0
+        }
         this.enemies = []
+        this.keys = {}
         this.menus = {}
         this.timer = {
             curr : 0,
-            clock : {
-                curr : 0,
-                last : 0,
-                passed : 0
-            },
-            delta : 1/60,
             diffDt : 0,
+            delta : 1/60,
             last : 0,
-            pause : true
+            pause : false
         }
         this.players = []
         this.weapons = []
@@ -62,7 +74,21 @@ class Game extends Control {
         startMenu.children.options.addEventListener('click', this.options.bind(this))
         this.menus.createPlayer.addEventListener('createPlayer', this.createPlayer.bind(this))
         this.menus.gameOver.addEventListener('restart', this.restart.bind(this))
+
+        document.addEventListener('keydown', this.keydown.bind(this))
+        document.addEventListener('keyup', this.keyup.bind(this))
+        const keys = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'Space']
+        keys.forEach(key => this.keys[key] = new Gamekey(key))
         
+    }
+    clamp(token) {
+        const hitbox = this.hitbox
+        var {x, y} = token
+        x = (x <= token.width / 2) ? token.width / 2 : x
+        x = (x >= hitbox.width - token.width / 2) ? hitbox.width - token.width / 2 : x
+        y = (y <= token.height / 2) ? token.height / 2 : y
+        y = (y >= hitbox.height - token.height / 2) ? hitbox.height - token.height / 2 : y
+        return {x, y}
     }
     createPlayer(event) {
         const menu = this.menus.createPlayer
@@ -75,8 +101,22 @@ class Game extends Control {
     }
     init(level) {
         console.log(level)
-        this.menus.gameOver.show()
+        level.spawn(this, this.players)
+
+        console.log(this)
+        /* this.menus.gameOver.show() */
         this.resize()
+    }
+    keydown(event) {
+        const key = this.keys[event.code]
+        if (key) key.dispatchEvent(new CustomEvent('down'))
+    }
+    keyup(event) {
+        const key = this.keys[event.code]
+        if (key) key.dispatchEvent(new CustomEvent('up'))
+    }
+    options(event) {
+        console.log('TODO : show options!', event)
     }
     resize() {
         this.height = window.innerHeight 
@@ -89,11 +129,9 @@ class Game extends Control {
             }
         }
         this.players.forEach(player => {
+            if (player.y >= this.height) player.y = this.height - player.height - 10
             player.setPosition(player.x, player.y)
         })
-    }
-    options(event) {
-        console.log('TODO : show options!', event)
     }
     restart(event) {
         const menu = this.menus.gameOver
@@ -108,7 +146,61 @@ class Game extends Control {
             this.resize()
         }else{
             this.init(LEVEL1)
+            this.update()
         }
+    }
+    update() {
+        const clock = this.clock
+        const timer = this.timer
+        clock.curr = performance.now()
+        clock.passed = (clock.curr - clock.last) / 1000
+        timer.diffDt = clock.passed - timer.delta
+        if (!timer.pause) {
+            timer.curr += timer.delta + timer.diffDt
+            timer.delta = timer.curr - timer.last
+            this.updatePlayer(timer.delta)
+            this.updateWeapons(timer.delta)
+            //updateEnemies(timer.delta)
+            timer.last = timer.curr 
+        }
+        clock.last = performance.now()
+        requestAnimationFrame(this.update.bind(this))
+    }
+    updatePlayer(delta) {
+        const player = this.players[0]
+        if (this.keys.KeyS.down) {
+            player.y += delta * player.speed
+        }
+        if (this.keys.KeyA.down) {
+            player.x -= delta * player.speed
+        }
+        if (this.keys.KeyD.down) {
+            player.x += delta * player.speed
+        }
+        if (this.keys.KeyW.down) {
+            player.y -= delta * player.speed
+        }
+        if (this.keys.Space.down && player.fireCooldown <= 0) {
+            const weapon = player.fire()
+            this.weapons.push(weapon)
+        }
+        if (player.fireCooldown > 0) player.fireCooldown -= delta
+        var {x ,y} = this.clamp(player)
+        //var {x ,y} = player
+        player.setPosition(x, y)
+    }
+    updateWeapons(delta) {
+        this.weapons.forEach(weapon => {
+            if (weapon.owner === 'player') {
+                weapon.y -= delta * weapon.speed
+                if (weapon.outOfBounds()) {
+                    weapon.destroy()
+                }else{
+                    weapon.setPosition(weapon.x, weapon.y)
+                }
+            }
+        })
+        this.weapons = this.weapons.filter(weapon => !weapon.isDead)
     }
 }
 

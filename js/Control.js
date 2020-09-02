@@ -81,10 +81,10 @@ class Control {
     isVisible() {
         return !(this.element.style.display === 'none' || this.element.style.display === '')
     }
-    setPosition(x , y) {
-        this.x = x
-        this.y = y
-        this.setTransform(`translate(${x}px, ${y}px)`)
+    setPosition(...args) {
+        this.x = args[0] || this.x
+        this.y = args[1] || this.y
+        this.setTransform(`translate(${this.x}px, ${this.y}px)`)
     }
     setTransform(style) {
         var fnName = style.substring(0, style.indexOf('('))

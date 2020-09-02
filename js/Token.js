@@ -24,6 +24,15 @@ class Token extends Control {
             this.hitbox.bottom < token.hitbox.top
         )
     }
+    outOfBounds() {
+        const hitbox = this.container.getBoundingClientRect()
+        return (
+            this.hitbox.top < hitbox.top ||
+            this.hitbox.left < hitbox.left ||
+            this.hitbox.bottom > hitbox.bottom ||
+            this.hitbox.right > hitbox.right
+        )
+    }
 }
 
 export { Token }
