@@ -11,6 +11,9 @@ class Token extends Control {
         this.name = name
         this.speed = speed
         this.owner = owner
+
+        this.classList.add('control')
+
     }
     destroy() {
         this.container.removeChild(this.element)

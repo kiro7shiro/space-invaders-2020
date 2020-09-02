@@ -2,12 +2,6 @@
     box-sizing: border-box;
 }
 
-/* #game {
-    position: absolute;
-    margin: 10px;
-    border: 1px solid white;
-} */
-
 #game {
     position: absolute;
     left: 0;
@@ -16,12 +10,6 @@
     width: 100%;
     background: url(./pics/SpaceShooterRedux/Backgrounds/darkPurple.png);
     animation: scroll-background 5s linear infinite;
-}
-
-#board {
-    position: absolute;
-    left : 20px;
-    top: 20px;
 }
 
 @keyframes scroll-background {
@@ -33,13 +21,13 @@
     }
 }
 
-@keyframes hit {
-    from {
-        opacity: 1;
-    }
-    to {
-        opacity: 0;
-    }
+.control {
+    position: absolute;
+    border: cornflowerblue 1px dotted;
+    height: 32px;
+    width: 32px;
+    margin-top: -16px;
+    margin-left: -16px;
 }
 
 #game form {
@@ -53,60 +41,67 @@
     outline: none;
 }
 
-#game #score {
+#board {
     position: absolute;
-    margin: 20px;
-    color: white;
-}
-
-#game #damage {
-    position: absolute;
-    margin: 20px;
-    color: white;
-    top: 90%;
+    left : 20px;
+    top: 20px;
 }
 
 #game .player {
     position: absolute;
-    margin-left: -20px;
-    margin-top: -18px;
-    width: 40px;
+    height: 24.27px;
+    width: 32px;
+    margin-top: -12.14px;
+    margin-left: -16px;
 }
 
 .player-hit {
     animation: hit 0.1s linear 0s 3;
 }
 
-#game #laser {
-    position: absolute;
-    margin-left: -2.5px;
-    height: 30px;
+@keyframes hit {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
 }
 
-#game #ray {
+#game .laser {
+    position: absolute;
+    height: 32px;
+    width: 5.39px;
+    margin-top: -16px;
+    margin-left: -2.7px;
+}
+
+#game .ray {
     position: absolute;
     opacity: 0;
-    height: 100px;
-    width: 5px;
-    margin-left: -2.5px;
+    height: 32px;
+    width: 32px;
+    margin-top: -16px;
+    margin-left: -16px;
     background-color: white;
 }
 
 #game .enemy {
     position: absolute;
-    margin-left: -20px;
-    margin-top: -18px;
-    width: 40px;
+    height: 28.86px;
+    width: 32px;
+    margin-top: -14.43px;
+    margin-left: -16px;
 }
 
-#game #explosion {
+#game .explosion {
     position: absolute;
     left: 0;
     top: 0;
-    height: 64px;
-    width: 64px;
-    margin-top: -32px;
-    margin-left: -32px;
+    height: 32px;
+    width: 32px;
+    margin-top: -16px;
+    margin-left: -16px;
     background-image: url('./pics/explosions/halfsized/2-2.png');
     animation: playv 1s steps(8) infinite, playh 0.125s steps(8) infinite;
 }

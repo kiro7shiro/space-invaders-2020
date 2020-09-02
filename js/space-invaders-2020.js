@@ -119,9 +119,9 @@ class Game extends Control {
         console.log('TODO : show options!', event)
     }
     resize() {
-        this.height = window.innerHeight 
+        this.height = window.innerHeight - 40
         this.width = 800
-        this.setPosition(window.innerWidth / 2 - this.width / 2, 0)
+        this.setPosition(window.innerWidth / 2 - this.width / 2, 20)
         for (const key in this.menus) {
             const menu = this.menus[key]
             if (menu.isVisible()) {
@@ -160,11 +160,36 @@ class Game extends Control {
             timer.delta = timer.curr - timer.last
             this.updatePlayer(timer.delta)
             this.updateWeapons(timer.delta)
-            //updateEnemies(timer.delta)
+            this.updateEnemies(timer.delta)
             timer.last = timer.curr 
         }
         clock.last = performance.now()
         requestAnimationFrame(this.update.bind(this))
+    }
+    updateEnemies(delta) {
+        const dx = Math.sin(this.timer.last) 
+        const dy = Math.cos(this.timer.last)
+        game.enemies.forEach(enemy => {
+            enemy.setPosition(enemy.x + dx, enemy.y + dy)
+            if (enemy.fireCooldown > 0) enemy.fireCooldown -= dt
+        })
+/*         var fire = false
+        var fIdx = getRandomNumber(0, game.enemies.length - 1, 0)
+        var firing = game.enemies[fIdx]
+        if (firing.fireCooldown <= 0) {
+            var ray = new Gametoken(game, 'div', firing.x + dx, firing.y + dy)
+            ray.element.id = 'ray'
+            fire = true
+            for (let eCnt = fIdx + 1; eCnt < game.enemies.length; eCnt++) {
+                const enemy = game.enemies[eCnt]
+                if (ray.hit(enemy)) {
+                    fire = false
+                    break
+                }
+            }
+            ray.destroy()
+            if (fire) game.weapons.push(firing.fire())
+        } */
     }
     updatePlayer(delta) {
         const player = this.players[0]

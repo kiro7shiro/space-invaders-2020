@@ -7,6 +7,7 @@ class Weapon extends Token {
         this.element.src = image
         this.element.id = name
         this.classList.add('weapon')
+        this.classList.add(name)
     }
 }
 
